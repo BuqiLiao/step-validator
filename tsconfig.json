@@ -7,9 +7,13 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
+    "declarationMap": false,
+    // "declarationDir": "./dist/types",
+    "emitDeclarationOnly": false,
+    "rootDir": "./src",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
     }
   },
-  "include": ["src", "types"]
+  "include": ["src"]
 }

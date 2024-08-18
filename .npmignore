@@ -2,6 +2,8 @@ src/
 node_modules/
 test/
 tsconfig.json
+package-lock.json
+pnpm-lock.yaml
 .gitignore
 .prettierrc
 

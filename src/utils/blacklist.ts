@@ -1,6 +1,6 @@
 import { isNil } from "lodash-es";
 import { validateCondition, isInRange, hostTypeValidationMap } from "./validators.js";
-import type { HostType } from "../../types/index.js";
+import type { HostType } from "@/types.js";
 
 const validateBlacklistAND = (title: string, value: string, blacklist: any) => {
   const isBlacklisted =

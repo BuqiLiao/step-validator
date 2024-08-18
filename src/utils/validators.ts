@@ -1,5 +1,5 @@
-import validator from 'validator';
-import type { HostType } from "../../types/index.js";
+import validator from "validator";
+import type { HostType } from "@/types.js";
 
 export const hostTypeValidationMap: { [key in HostType]?: (value: string) => boolean } = {
   FQDN: (value) => validator.isFQDN(value),

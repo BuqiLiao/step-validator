@@ -1,6 +1,6 @@
 import { isString, merge, isNil } from "lodash-es";
-import { validateWhitelist, validateBlacklist } from "@/utils/index.js";
-import type { URLValidationOptions, StringOptions } from "../types/index.js";
+import { validateWhitelist, validateBlacklist, validateWhitelistNew } from "@/utils/index.js";
+import type { URLValidationOptions, StringValidationOptions } from "@/types.js";
 
 const defaultOptions: URLValidationOptions = {
   protocol_config: {
@@ -129,13 +129,32 @@ export const isValidUrl = (value: string, options: URLValidationOptions) => {
   };
 };
 
-export const isValidString = (value: string, errorLabel: string = "String", options?: StringOptions) => {
+export const isValidString = (value: string, options?: StringValidationOptions) => {
   if (!isString(value)) {
-    throw new Error(`${errorLabel} should be a string`);
+    return {
+      is_valid: false,
+      error_message: options?.error_messages?.typeError ?? `${options?.error_label ?? "String"} should be a string`
+    };
   }
   if (options?.required && !value) {
-    throw new Error(`${errorLabel} should not be empty`);
+    return {
+      is_valid: false,
+      error_message: options?.error_messages?.requiredError ?? `${options?.error_label ?? "String"} should not be empty`
+    };
   }
-  validateWhitelist(errorLabel, value, options?.whitelist);
-  validateBlacklist(errorLabel, value, options?.blacklist);
+  if (options?.whitelist) {
+    const whitelistResult = validateWhitelistNew(value, {
+      whitelist: options.whitelist,
+      error_label: options?.error_label ?? "String",
+      error_message: options?.error_messages?.whitelistError
+    });
+    if (!whitelistResult.is_valid) {
+      return whitelistResult;
+    }
+  }
+  // const blacklistResult = validateBlacklistNew(options?.error_label ?? "String", value, options?.blacklist);
+  // if (!blacklistResult.is_valid) {
+  //   return blacklistResult;
+  // }
+  return { is_valid: true };
 };

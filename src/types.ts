@@ -7,6 +7,7 @@ export interface BaseOptions {
   start_with?: string[];
   end_with?: string[];
   contains?: string[];
+  validation_sequence?: ('values' | 'start_with' | 'end_with' | 'contains')[]; // only when combine is 'and'
 }
 export interface HostOptions extends BaseOptions {
   types?: HostType[];
@@ -50,9 +51,17 @@ export interface URLValidationOptions {
   };
 }
 
-export interface StringOptions {
+export interface ErrorMessages {
+  typeError?: string;
+  requiredError?: string;
+  whitelistError?: string;
+  blacklistError?: string;
+}
+
+export interface StringValidationOptions {
   required?: boolean;
   whitelist?: BaseOptions;
   blacklist?: BaseOptions;
+  error_label?: string;
+  error_messages?: ErrorMessages;
 }
-

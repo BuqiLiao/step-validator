@@ -23,11 +23,14 @@ const config = {
 
 const result = isValidUrl(url, config);
 console.log(
-  isValidString("http://example.com/", "String", {
-    required: false,
-    blacklist: {
-      contains: [".."],
-      end_with: ["/"]
+  isValidString("123", {
+    required: true,
+    whitelist: {
+      values: ["1233", "456"]
+    },
+    error_label: "String1",
+    error_messages: {
+      typeError: "Type error message",
     }
   })
 );
