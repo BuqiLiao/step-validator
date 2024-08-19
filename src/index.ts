@@ -1,7 +1,6 @@
 import { isNil, isEmpty, isString, isObject } from "lodash-es";
 import { validateStringWithList } from "@/utils/validateStringWithList.js";
 import type { StringListOptions, StringCheckOptions } from "@/utils/validateStringWithList.js";
-import { whitelist } from "validator";
 
 export type ActualSequences = {
   list_type: "whitelist" | "blacklist";

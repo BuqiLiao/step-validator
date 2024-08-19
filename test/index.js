@@ -1,3 +1,4 @@
+import URL from 'url-parse'
 import { isValidString } from "../dist/index.js";
 
 // // 示例 URL 和配置
@@ -22,16 +23,20 @@ import { isValidString } from "../dist/index.js";
 // };
 
 // const result = isValidUrl(url, config);
-console.log(
-  isValidString("123", {
-    required: true,
-    whitelist: {
-      values: ["1233", "456"]
-    },
-    error_label: "String1",
-    error_messages: {
-      typeError: "Type error message"
-    }
-  })
-);
+// console.log(
+//   isValidString("123", {
+//     required: true,
+//     whitelist: {
+//       values: ["1233", "456"]
+//     },
+//     error_label: "String1",
+//     error_messages: {
+//       typeError: "Type error message"
+//     }
+//   })
+// );
 // console.log(result);
+
+console.log(new URL("http://example.com/?a=1&b=2&c=3",true));
+
+
