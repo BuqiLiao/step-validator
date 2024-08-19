@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
+    "range_check": "^3.2.0",
     "url-parse": "^1.5.10",
     "validator": "^13.12.0"
   },

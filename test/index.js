@@ -1,4 +1,5 @@
 import URL from 'url-parse'
+import { isIP, inRange } from "range_check";
 import { isValidString } from "../dist/index.js";
 
 // // 示例 URL 和配置
@@ -38,5 +39,8 @@ import { isValidString } from "../dist/index.js";
 // console.log(result);
 
 console.log(new URL("http://example.com/?a=1&b=2&c=3",true));
+
+console.log(inRange('192.168.1.1', ['10.0.0.0/0', '193.0.0.0/0']))
+console.log(inRange('192.14.1.1',['10.0.0.0/0','192.14.1.1/6']))
 
 
