@@ -11,8 +11,9 @@
     // "declarationDir": "./dist/types",
     "emitDeclarationOnly": false,
     "rootDir": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["src"]

@@ -1,14 +1,23 @@
 export type HostType = "FQDN" | "ipv4" | "ipv6";
-export type CombineType = "and" | "or";
+export type CombineType = "AND" | "OR";
 
-export interface BaseOptions {
-  combine?: CombineType;
+export interface CheckOptions {
   values?: string[];
-  start_with?: string[];
-  end_with?: string[];
+  starts_with?: string[];
+  ends_with?: string[];
   contains?: string[];
-  validation_sequence?: ('values' | 'start_with' | 'end_with' | 'contains')[]; // only when combine is 'and'
 }
+
+export interface BaseOptions extends CheckOptions {
+  combine?: CombineType;
+  validation_sequence?: ("values" | "start_with" | "end_with" | "contains")[]; // only when combine is 'and'
+}
+
+export interface ListOptions extends CheckOptions {
+  combination?: CombineType;
+  validation_sequence?: ("values" | "starts_with" | "ends_with" | "contains")[];
+}
+
 export interface HostOptions extends BaseOptions {
   types?: HostType[];
 }
@@ -52,10 +61,10 @@ export interface URLValidationOptions {
 }
 
 export interface ErrorMessages {
-  typeError?: string;
-  requiredError?: string;
-  whitelistError?: string;
-  blacklistError?: string;
+  type_error?: string;
+  required_error?: string;
+  whitelist_error?: string | ((type: string, expected_values: string[]) => string);
+  blacklist_error?: string;
 }
 
 export interface StringValidationOptions {
