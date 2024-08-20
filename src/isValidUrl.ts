@@ -44,8 +44,6 @@ export const isValidUrl = (url: string, options: URLValidationOptions) => {
       result = isValidQuery(parsedUrl.query, options[`${check}_config`]);
     } else if (check === "port") {
       result = isValidNumber(Number(parsedUrl.port), options[`${check}_config`]);
-    } else if (check === "protocol") {
-      result = isValidString(parsedUrl.protocol.split(":")[0], options[`${check}_config`] as any);
     } else if (check === "host") {
       result = isValidString(parsedUrl.hostname, options[`${check}_config`] as any);
     } else {

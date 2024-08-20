@@ -9,23 +9,24 @@ import validator from "validator";
 // import { isIPv4InRange } from "../dist/utils/isValidIPv4.js";
 
 import { isValidUrl } from "../dist/index.js";
-import { validateString } from "../dist/validateString.js";
-const result = validateString("123", {
-  whitelist: {
-    values: ["123", "456"]
-  }
-});
-console.log(result);
-console.log(result.toString());
-const { is_valid, error_message } = result
-console.log(is_valid, error_message);
 
 console.log(
-  isValidUrl("udp://192.0.0.0:8080?localaddr=192.168.1.0&prg=123#fragment", {
+  isValidUrl("udp:", {
     protocol_config: {
       required: true,
       whitelist: {
-        values: ["udp"]
+        values: ["udp:"]
+      }
+    }
+  })
+);
+
+console.log(
+  isValidUrl("udp://192.0.0.0:8080#fragment", {
+    protocol_config: {
+      required: true,
+      whitelist: {
+        values: ["udp:"]
       },
       error_label: "Protocol"
     },
