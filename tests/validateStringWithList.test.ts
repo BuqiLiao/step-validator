@@ -1,4 +1,4 @@
-import { validateStringWithList } from "../src/utils/validateStringWithList";
+import { validateStringWithList } from "../src/utils/validateWithList";
 
 describe("validate error types of parameters", () => {
   // Value must be a string
@@ -233,6 +233,34 @@ describe("validate String With Whitelist", () => {
       is_valid: false,
       actual_sequence: ["starts_with"],
       error_message: 'Value should start with "exe"'
+    });
+  });
+
+  //AND -custom validation
+  test("AND -custom validation", () => {
+    expect(
+      validateStringWithList("example123", {
+        error_label: "Value",
+        list_type: "whitelist",
+        list: {
+          combination: "AND",
+          values: ["example123"],
+          starts_with: ["ex"],
+          ends_with: ["123"],
+          contains: ["ample"],
+          validation_sequence: [
+            "starts_with",
+            "ends_with",
+            (value) => value === "example123",
+            "contains",
+            "values",
+            (value) => value.length > 5
+          ]
+        }
+      })
+    ).toEqual({
+      is_valid: true,
+      actual_sequence: ["starts_with", "ends_with", "self_check_0", "contains", "values", "self_check_1"]
     });
   });
 
@@ -532,6 +560,36 @@ describe("validate String With Blacklist", () => {
       actual_sequence: ["starts_with", "ends_with", "contains", "values"],
       error_message:
         'Value should not start with "ex" and should not end with "123" and should not contain "ample" and should not be "example123"'
+    });
+  });
+
+  //AND -custom validation
+  test("AND -custom validation", () => {
+    expect(
+      validateStringWithList("example123", {
+        error_label: "Value",
+        list_type: "blacklist",
+        list: {
+          combination: "AND",
+          values: ["example123"],
+          starts_with: ["ex"],
+          ends_with: ["123"],
+          contains: ["ample"],
+          validation_sequence: [
+            "starts_with",
+            "ends_with",
+            (value) => value === "example123",
+            "contains",
+            "values",
+            (value) => value.length > 5
+          ]
+        }
+      })
+    ).toEqual({
+      is_valid: false,
+      actual_sequence: ["starts_with", "ends_with", "self_check_0", "contains", "values", "self_check_1"],
+      error_message:
+        'Value should not start with "ex" and should not end with "123" and should not pass self check 0 and should not contain "ample" and should not be "example123" and should not pass self check 1'
     });
   });
 

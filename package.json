@@ -1,6 +1,6 @@
 {
-  "name": "step-validators",
-  "version": "1.0.0",
+  "name": "step-validator",
+  "version": "2.0.0",
   "description": "A flexible validation library with customizable rules for strings and numbers",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
     "build": "tsc && tsc-alias",
     "build:dev": "concurrently \"tsc -w\" \"tsc-alias -w\"",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:index": "cross-env NODE_OPTIONS=--experimental-vm-modules jest tests/index.test.ts"
+    "test:index": "cross-env NODE_OPTIONS=--experimental-vm-modules jest tests/isValidString.test.ts"
   },
   "keywords": [
     "step",
@@ -18,18 +18,20 @@
     "validators",
     "string",
     "number",
+    "whitelist",
+    "blacklist",
     "sanitization",
     "protocol",
     "host",
     "port",
     "query",
-    "fragment"
+    "hash"
   ],
   "author": "Buqi Liao",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BuqiLiao/url-step-validator.git"
+    "url": "https://github.com/BuqiLiao/step-validators.git"
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
@@ -40,6 +42,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/lodash-es": "^4.17.12",
+    "@types/url-parse": "^1.4.11",
     "@types/validator": "^13.12.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",

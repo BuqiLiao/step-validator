@@ -1,4 +1,4 @@
-import { isValidString } from "../src/index";
+import { isValidString } from "../src/isValidString";
 
 describe("validate error types of parameters", () => {
   // Value must be a string
@@ -48,14 +48,8 @@ describe("validate empty parameters", () => {
   // Test empty value
   test("should return true if value is empty and required is false or not provided", () => {
     expect(isValidString("")).toEqual({ is_valid: true });
-    expect(isValidString("", { whitelist: { values: ["123"] } })).toEqual({
-      is_valid: true,
-      actual_sequences: [{ list_type: "whitelist" }]
-    });
-    expect(isValidString("", { blacklist: { values: ["123"] } })).toEqual({
-      is_valid: true,
-      actual_sequences: [{ list_type: "blacklist" }]
-    });
+    expect(isValidString("", { whitelist: { values: ["123"] } })).toEqual({ is_valid: true });
+    expect(isValidString("", { blacklist: { values: ["123"] } })).toEqual({ is_valid: true });
   });
   test("should return true if value is empty and required is true", () => {
     expect(isValidString("", { required: true })).toEqual({
@@ -88,6 +82,17 @@ describe("validate empty parameters", () => {
           contains: []
         }
       })
-    ).toEqual({ is_valid: true, actual_sequences: [{ list_type: "whitelist" }] });
+    ).toEqual({ is_valid: true });
+  });
+});
+
+describe("validate string with whitelist", () => {
+  test("should return true if value is in whitelist", () => {
+    expect(isValidString("123", { whitelist: { values: ["123"] } })).toEqual({ is_valid: true });
+    expect(isValidString("123", { whitelist: { values: ["123"], combination: "AND" } })).toEqual({ is_valid: true });
+    expect(isValidString("123", { whitelist: { values: ["123"], combination: "OR" } })).toEqual({ is_valid: true });
+    expect(isValidString("123", { whitelist: { starts_with: ["123"] } })).toEqual({ is_valid: true });
+    expect(isValidString("123", { whitelist: { ends_with: ["123"] } })).toEqual({ is_valid: true });
+    expect(isValidString("123", { whitelist: { contains: ["123"] } })).toEqual({ is_valid: true });
   });
 });
