@@ -5,7 +5,7 @@ import type { StringValidationOptions } from "@/isValidString.js";
 import type { NumberValidationOptions } from "@/isValidNumber.js";
 
 export type QueryValueValidationOptions =
-  | ({ type: "string" } & StringValidationOptions)
+  | ({ type?: "string" } & StringValidationOptions)
   | ({ type: "number" } & NumberValidationOptions);
 
 export type QueryValidationOptions = {
@@ -16,7 +16,7 @@ export type QueryValidationOptions = {
     allow_duplicates?: boolean;
     require_all?: boolean;
   };
-  values_config: {
+  values_config?: {
     [key: string]: QueryValueValidationOptions;
   };
   error_messages?: {
