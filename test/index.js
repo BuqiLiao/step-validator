@@ -1,4 +1,4 @@
-// // import URL from 'url-parse'
+import URL from 'url-parse'
 // import { isIP, inRange } from "range_check";
 // // import { isValidString } from "../dist/index.js";
 // import URLParser from "url-parse";
@@ -8,21 +8,30 @@ import validator from "validator";
 
 // import { isIPv4InRange } from "../dist/utils/isValidIPv4.js";
 
-import { isValidUrl } from "../dist/index.js";
+import { isValidUrl, isValidString } from "../dist/index.js";
+
+// console.log(
+//   isValidUrl("udp:", {
+//     protocol_config: {
+//       required: true,
+//       whitelist: {
+//         values: ["udp:"]
+//       }
+//     }
+//   })
+// );
+// console.log(URL("udp://192.0.0.0:123?localaddr=1.0.0.0&prg=",true));
+
+// console.log(
+//   isValidString("", {
+//     whitelist: {
+//       values: ["123"]
+//     }
+//   })
+// );
 
 console.log(
-  isValidUrl("udp:", {
-    protocol_config: {
-      required: true,
-      whitelist: {
-        values: ["udp:"]
-      }
-    }
-  })
-);
-
-console.log(
-  isValidUrl("udp://192.0.0.0:8080#fragment", {
+  isValidUrl("udp://192.0.0.0:12355?prg=", {
     protocol_config: {
       required: true,
       whitelist: {
@@ -35,6 +44,7 @@ console.log(
       whitelist: {
         validation_sequence: [(value) => validator.isIP(value, 4)]
       },
+      error_label: "Host",
       error_messages: {
         whitelist: (type) => {
           if (type === "self_check_0") {
@@ -45,13 +55,9 @@ console.log(
     },
     port_config: {
       required: true,
-      whitelist: {
-        ranges: [[1, 8080]]
-      },
       error_label: "Port"
     },
     query_config: {
-      required: true,
       keys_config: {
         whitelist: ["localaddr", "prg"],
         allow_duplicates: false
@@ -62,6 +68,7 @@ console.log(
           whitelist: {
             validation_sequence: [(value) => validator.isIP(value, 4)]
           },
+          error_label: "localaddr's value",
           error_messages: {
             whitelist: (type) => {
               if (type === "self_check_0") {
@@ -71,12 +78,8 @@ console.log(
           }
         },
         prg: {
-          type: "number",
-          required: true,
-          whitelist: {
-            ranges: [[100, 8080]]
-          },
-          error_label: "prg"
+          type: "port",
+          error_label: "prg's value"
         }
       }
     }

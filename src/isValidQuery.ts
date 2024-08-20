@@ -1,12 +1,15 @@
 import { isNil, isEmpty, isObject, isString } from "lodash-es";
 import { isValidString } from "@/isValidString.js";
 import { isValidNumber } from "@/isValidNumber.js";
+import { isValidPort } from "@/isValidPort.js";
 import type { StringValidationOptions } from "@/isValidString.js";
 import type { NumberValidationOptions } from "@/isValidNumber.js";
+import type { PortValidationOptions } from "@/isValidPort.js";
 
 export type QueryValueValidationOptions =
   | ({ type?: "string" } & StringValidationOptions)
-  | ({ type: "number" } & NumberValidationOptions);
+  | ({ type: "number" } & NumberValidationOptions)
+  | ({ type: "port" } & PortValidationOptions);
 
 export type QueryValidationOptions = {
   allowed?: boolean;
@@ -55,7 +58,7 @@ export const isValidQuery = (query: string, options?: QueryValidationOptions) =>
       error_message: error_messages?.allowed_error ?? "Query must be empty"
     };
   }
-  if (isEmpty(keys_config)) return { is_valid: true };
+  if (isEmpty(query) || isEmpty(keys_config)) return { is_valid: true };
 
   const { whitelist, allow_duplicates, require_all } = keys_config;
 
@@ -95,7 +98,9 @@ export const isValidQuery = (query: string, options?: QueryValidationOptions) =>
       const { is_valid, error_message } =
         type === "string"
           ? isValidString(decodedValue, rest as StringValidationOptions)
-          : isValidNumber(Number(decodedValue), rest as NumberValidationOptions);
+          : type === "number"
+          ? isValidNumber(Number(decodedValue), rest as NumberValidationOptions)
+          : isValidPort(decodedValue, rest as PortValidationOptions);
       if (!is_valid) {
         return { is_valid, error_message };
       }
@@ -103,34 +108,6 @@ export const isValidQuery = (query: string, options?: QueryValidationOptions) =>
 
     result[decodedKey] = decodedValue;
   }
-
-  // const checkedKeys = new Set<string>();
-  // for (const [key, value] of Object.entries(query)) {
-  //   if (whitelist && !whitelist.includes(key)) {
-  //     return {
-  //       is_valid: false,
-  //       error_message: generateErrorMessage(
-  //         key,
-  //         error_messages?.invalid_key_error ?? `Query key should be one of ${whitelist.join(", ")}`
-  //       )
-  //     };
-  //   }
-  //   console.log(checkedKeys);
-  //   if (allow_duplicates === false && checkedKeys.has(key)) {
-  //     return {
-  //       is_valid: false,
-  //       error_message: generateErrorMessage(key, error_messages?.duplicate_key_error ?? `Duplicate query key: ${key}`)
-  //     };
-  //   }
-  //   checkedKeys.add(key);
-  //   let valueToCheck = value === undefined ? "" : value;
-  //   if (values_config && values_config[key]) {
-  //     const { is_valid, error_message } = isValidString(valueToCheck, values_config[key]);
-  //     if (!is_valid) {
-  //       return { is_valid, error_message };
-  //     }
-  //   }
-  // }
 
   if (require_all === true && whitelist) {
     for (const key of whitelist) {

@@ -46,6 +46,7 @@ export const isValidString = (value: string, options?: StringValidationOptions) 
       error_message: error_messages?.allowed_error ?? `${error_label ?? "Value"} must be empty`
     };
   }
+  if (isEmpty(value)) return { is_valid: true };
 
   const validationSequence = validation_sequence ?? ["whitelist", "blacklist"];
   const seenChecks = new Set<"whitelist" | "blacklist">();

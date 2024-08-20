@@ -1,19 +1,19 @@
-import { isNil, isEmpty, isString, isObject, isArray } from "lodash-es";
+import { isNil, isEmpty, isString, isObject } from "lodash-es";
 import URLParser from "url-parse";
 
 import { isValidString } from "@/isValidString.js";
-import { isValidNumber } from "@/isValidNumber.js";
+import { isValidPort } from "@/isValidPort.js";
 import { isValidQuery } from "@/isValidQuery.js";
 import type { QueryValidationOptions } from "@/isValidQuery.js";
 import type { StringValidationOptions } from "@/isValidString.js";
-import type { NumberValidationOptions } from "@/isValidNumber.js";
+import type { PortValidationOptions } from "@/isValidPort.js";
 
 type UrlValidation = "protocol" | "host" | "port" | "query" | "hash";
 
 export interface URLValidationOptions {
   protocol_config?: StringValidationOptions;
   host_config?: StringValidationOptions;
-  port_config?: NumberValidationOptions;
+  port_config?: PortValidationOptions;
   query_config?: QueryValidationOptions;
   hash_config?: StringValidationOptions;
   validation_sequence?: UrlValidation[];
@@ -43,7 +43,7 @@ export const isValidUrl = (url: string, options: URLValidationOptions) => {
     if (check === "query") {
       result = isValidQuery(parsedUrl.query, options[`${check}_config`]);
     } else if (check === "port") {
-      result = isValidNumber(Number(parsedUrl.port), options[`${check}_config`]);
+      result = isValidPort(parsedUrl.port, options.port_config);
     } else if (check === "host") {
       result = isValidString(parsedUrl.hostname, options[`${check}_config`] as any);
     } else {
