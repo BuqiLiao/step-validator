@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isString, isObject } from "lodash-es";
+import { isNil, isEmpty, isString, isPlainObject } from "lodash-es";
 import URLParser from "url-parse";
 
 import { isValidString } from "@/isValidString.js";
@@ -23,8 +23,8 @@ export const isValidUrl = (url: string, options: URLValidationOptions) => {
   if (!isString(url)) {
     throw new Error("URL must be a string");
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(options)) return { is_valid: true };
 

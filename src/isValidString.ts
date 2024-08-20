@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isString, isObject } from "lodash-es";
+import { isNil, isEmpty, isString, isPlainObject } from "lodash-es";
 import { validateStringWithList } from "@/utils/validateWithList.js";
 import type { StringListOptions } from "@/utils/validateWithList.js";
 
@@ -27,8 +27,8 @@ export const isValidString = (value: string, options?: StringValidationOptions) 
       error_message: options?.error_messages?.type_error ?? `${options?.error_label ?? "Value"} must be a string`
     };
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(options)) return { is_valid: true };
 

@@ -16,21 +16,21 @@ describe("validate error types of parameters", () => {
     });
   });
 
-  // Options must be an object
-  test("should throw error if options is not an object", () => {
+  // Options must be a plain object
+  test("should throw error if options is not a plain object", () => {
     expect(() => {
       isValidString("123", "test" as any);
-    }).toThrow("Options must be an object");
+    }).toThrow("Options must be a plain object");
   });
 
-  //list must be an object
-  test("should throw error if list is not an object", () => {
+  //list must be a plain object
+  test("should throw error if list is not a plain object", () => {
     expect(() => {
       isValidString("123", { whitelist: "test" as any });
-    }).toThrow("list must be an object");
+    }).toThrow("list must be a plain object");
     expect(() => {
       isValidString("123", { blacklist: "test" as any });
-    }).toThrow("list must be an object");
+    }).toThrow("list must be a plain object");
   });
 
   // Combination must be either 'AND' or 'OR'

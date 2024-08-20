@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isObject, isString } from "lodash-es";
+import { isNil, isEmpty, isPlainObject, isString } from "lodash-es";
 import { isValidString } from "@/isValidString.js";
 import { isValidNumber } from "@/isValidNumber.js";
 import { isValidPort } from "@/isValidPort.js";
@@ -39,8 +39,8 @@ export const isValidQuery = (query: string, options?: QueryValidationOptions) =>
   if (!isString(query)) {
     throw new Error("Query must be a string");
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(options)) return { is_valid: true };
 

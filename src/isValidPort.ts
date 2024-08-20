@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isString, isObject, isArray } from "lodash-es";
+import { isNil, isEmpty, isString, isPlainObject, isArray, isNumber } from "lodash-es";
 import { isValidNumber } from "@/isValidNumber.js";
 import type { NumberValidationOptions, NumberErrorMessages } from "@/isValidNumber.js";
 
@@ -12,33 +12,38 @@ export interface PortValidationOptions extends NumberValidationOptions {
   error_messages?: PortErrorMessages;
 }
 
-export function isValidPort(value: string, options?: PortValidationOptions) {
-  if (!isString(value)) {
+export function isValidPort(value: string | number, options?: PortValidationOptions) {
+  if (!isString(value) && !isNumber(value)) {
     return {
       is_valid: false,
-      error_message: options?.error_messages?.type_error ?? `${options?.error_label ?? "Port"} must be a string`
+      error_message:
+        options?.error_messages?.type_error ?? `${options?.error_label ?? "Port"} must be a string or number`
     };
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isNil(options)) {
     options = {};
   }
-  const { allowed, required, error_label, error_messages } = options;
-  if (required === true && !value) {
-    return {
-      is_valid: false,
-      error_message: error_messages?.required_error ?? `${error_label ?? "Value"} must not be empty`
-    };
+  if (isString(value)) {
+    if (value === "") return { is_valid: true };
+
+    const { allowed, required, error_label, error_messages } = options;
+    if (required === true && !value) {
+      return {
+        is_valid: false,
+        error_message: error_messages?.required_error ?? `${error_label ?? "Value"} must not be empty`
+      };
+    }
+    if (allowed === false && value) {
+      return {
+        is_valid: false,
+        error_message: error_messages?.allowed_error ?? `${error_label ?? "Value"} must be empty`
+      };
+    }
+    value = Number(value);
   }
-  if (allowed === false && value) {
-    return {
-      is_valid: false,
-      error_message: error_messages?.allowed_error ?? `${error_label ?? "Value"} must be empty`
-    };
-  }
-  if (isEmpty(value)) return { is_valid: true };
 
   // options.whitelist?.values
   if (isEmpty(options.whitelist)) {
@@ -50,5 +55,5 @@ export function isValidPort(value: string, options?: PortValidationOptions) {
   } else {
     options.whitelist.ranges.push([1, 65535]);
   }
-  return isValidNumber(Number(value), options);
+  return isValidNumber(value, options);
 }

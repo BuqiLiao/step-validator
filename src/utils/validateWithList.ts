@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isString, isNumber, isObject, isBoolean } from "lodash-es";
+import { isNil, isEmpty, isString, isNumber, isPlainObject, isBoolean } from "lodash-es";
 
 export interface StringCheckOptions {
   values?: string[];
@@ -75,16 +75,16 @@ export const validateStringWithList = (value: string, options?: ValidateStringWi
   if (!isString(value)) {
     throw new Error("Value must be a string");
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(value) || isEmpty(options)) return { is_valid: true };
 
   const { list, list_type, error_label, error_message } = options;
 
   if (isNil(list)) return { is_valid: true };
-  if (!isObject(list)) {
-    throw new Error("list must be an object");
+  if (!isPlainObject(list)) {
+    throw new Error("list must be a plain object");
   }
   if (isEmpty(list)) return { is_valid: true };
 
@@ -189,16 +189,16 @@ export const validateNumberWithList = (value: number, options?: ValidateNumberWi
   if (!isNumber(value)) {
     throw new Error("Value must be a number");
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(options)) return { is_valid: true };
 
   const { list, list_type, error_label, error_message } = options;
 
   if (isNil(list)) return { is_valid: true };
-  if (!isObject(list)) {
-    throw new Error("list must be an object");
+  if (!isPlainObject(list)) {
+    throw new Error("list must be a plain object");
   }
   if (isEmpty(list)) return { is_valid: true };
 

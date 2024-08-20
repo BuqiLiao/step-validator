@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isNumber, isObject } from "lodash-es";
+import { isNil, isEmpty, isNumber, isPlainObject } from "lodash-es";
 import { validateNumberWithList } from "@/utils/validateWithList.js";
 import type { NumberListOptions } from "@/utils/validateWithList.js";
 
@@ -23,8 +23,8 @@ export const isValidNumber = (value: number, options?: NumberValidationOptions) 
       error_message: options?.error_messages?.type_error ?? `${options?.error_label ?? "Value"} must be a number`
     };
   }
-  if (!isNil(options) && !isObject(options)) {
-    throw new Error("Options must be an object");
+  if (!isNil(options) && !isPlainObject(options)) {
+    throw new Error("Options must be a plain object");
   }
   if (isEmpty(options)) return { is_valid: true };
 
