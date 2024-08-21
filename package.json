@@ -9,7 +9,7 @@
     "build": "tsc && tsc-alias",
     "build:dev": "concurrently \"tsc -w\" \"tsc-alias -w\"",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:index": "cross-env NODE_OPTIONS=--experimental-vm-modules jest tests/isValidString.test.ts"
+    "test:index": "cross-env NODE_OPTIONS=--experimental-vm-modules jest tests/validateStringWithList.test.ts"
   },
   "keywords": [
     "step",

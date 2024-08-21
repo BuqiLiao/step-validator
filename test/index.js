@@ -1,4 +1,4 @@
-import URL from 'url-parse'
+import URL from "url-parse";
 // import { isIP, inRange } from "range_check";
 // // import { isValidString } from "../dist/index.js";
 // import URLParser from "url-parse";
@@ -8,13 +8,18 @@ import validator from "validator";
 
 // import { isIPv4InRange } from "../dist/utils/isValidIPv4.js";
 
-import { isValidUrl, isValidString, isValidPort } from "../dist/index.js";
+import { isValidUrl, validateUrl, isValidString, isValidPort } from "../dist/index.js";
 
-console.log(isValidPort("1235511", {
-  whitelist: {
-    ranges: [[1, 65535]]
-  }
-}));
+// console.log(isValidPort("1235511", {
+//   whitelist: {
+//     ranges: [[1, 65535]]
+//   }
+// }));
+// console.log(isValidPort(1235511, {
+//   whitelist: {
+//     ranges: [[1, 65535]]
+//   }
+// }));
 
 // console.log(
 //   isValidUrl("udp:", {
@@ -35,62 +40,65 @@ console.log(isValidPort("1235511", {
 //     }
 //   })
 // );
+const isIPv4 = (value) => validator.isIP(value, 4);
 
-// console.log(
-//   isValidUrl("udp://192.0.0.0:1235511", {
-//     protocol_config: {
-//       required: true,
-//       whitelist: {
-//         values: ["udp:"]
-//       },
-//       error_label: "Protocol"
-//     },
-//     host_config: {
-//       required: true,
-//       whitelist: {
-//         validation_sequence: [(value) => validator.isIP(value, 4)]
-//       },
-//       error_label: "Host",
-//       error_messages: {
-//         whitelist: (type) => {
-//           if (type === "self_check_0") {
-//             return "Host should be an IPv4 address";
-//           }
-//         }
-//       }
-//     },
-//     port_config: {
-//       required: true,
-//       error_label: "Port"
-//     },
-//     query_config: {
-//       keys_config: {
-//         whitelist: ["localaddr", "prg"],
-//         allow_duplicates: false
-//       },
-//       values_config: {
-//         localaddr: {
-//           required: true,
-//           whitelist: {
-//             validation_sequence: [(value) => validator.isIP(value, 4)]
-//           },
-//           error_label: "localaddr's value",
-//           error_messages: {
-//             whitelist: (type) => {
-//               if (type === "self_check_0") {
-//                 return "localaddr's value should be an IPv4 address";
-//               }
-//             }
-//           }
-//         },
-//         prg: {
-//           type: "port",
-//           error_label: "prg's value"
-//         }
-//       }
-//     }
-//   })
-// );
+const config = {
+  protocol_config: {
+    required: true,
+    whitelist: {
+      values: ["udp:"]
+    },
+    error_label: "Protocol"
+  },
+  host_config: {
+    required: true,
+    whitelist: {
+      validation_sequence: [isIPv4]
+    },
+    error_label: "Host",
+    error_messages: {
+      whitelist: (type) => {
+        if (type === isIPv4) {
+          return "Host should be an IPv4 address";
+        }
+      }
+    }
+  },
+  port_config: {
+    required: true,
+    error_label: "Port"
+  },
+  query_config: {
+    keys_config: {
+      whitelist: ["localaddr", "prg"],
+      allow_duplicates: false
+    },
+    values_config: {
+      localaddr: {
+        required: true,
+        whitelist: {
+          validation_sequence: [isIPv4]
+        },
+        error_label: "localaddr's value",
+        error_messages: {
+          whitelist: (type) => {
+            if (type === isIPv4) {
+              return "localaddr's value should be an IPv4 address";
+            }
+          }
+        }
+      },
+      prg: {
+        type: "port",
+        error_label: "prg's value"
+      }
+    }
+  }
+};
+const url = "udp://1.0.0.0:011111?localaddr=1.0.0.0&prg=123&prg=123";
+
+console.log(validateUrl(url, config));
+console.log(isValidUrl(url, config));
 
 // console.log(isValidNumber(123, {
 //   whitelist: {

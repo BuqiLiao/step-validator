@@ -1,4 +1,4 @@
-import { validateStringWithList } from "../src/utils/validateWithList";
+import { validateStringByList } from "../src/utils/validateByList";
 
 describe("validate error types of parameters", () => {
   // Value must be a string
@@ -6,7 +6,7 @@ describe("validate error types of parameters", () => {
     const invalidValues = [undefined, null, true, 123, [], {}];
     invalidValues.forEach((value) => {
       expect(() => {
-        validateStringWithList(value as any);
+        validateStringByList(value as any);
       }).toThrow("Value must be a string");
     });
   });
@@ -14,28 +14,28 @@ describe("validate error types of parameters", () => {
   // Options must be a plain object
   test("should throw error if options is not a plain object", () => {
     expect(() => {
-      validateStringWithList("123", "test" as any);
+      validateStringByList("123", "test" as any);
     }).toThrow("Options must be a plain object");
   });
 
   //list must be a plain object
   test("should throw error if list is not a plain object", () => {
     expect(() => {
-      validateStringWithList("123", { list: "test" as any });
+      validateStringByList("123", { list: "test" as any });
     }).toThrow("list must be a plain object");
   });
 
   // listType must be either 'whitelist' or 'blacklist'
   test("should throw error if listType is not 'whitelist' or 'blacklist'", () => {
     expect(() => {
-      validateStringWithList("123", { list_type: "test" as any, list: { values: ["123"] } });
+      validateStringByList("123", { list_type: "test" as any, list: { values: ["123"] } });
     }).toThrow("list_type must be either 'whitelist' or 'blacklist'");
   });
 
   // Combination must be either 'AND' or 'OR'
   test("should throw error if combination is not 'AND' or 'OR'", () => {
     expect(() => {
-      validateStringWithList("123", { list_type: "whitelist", list: { combination: "test" as any, values: ["123"] } });
+      validateStringByList("123", { list_type: "whitelist", list: { combination: "test" as any, values: ["123"] } });
     }).toThrow('Combination must be either "AND" or "OR"');
   });
 });
@@ -43,23 +43,23 @@ describe("validate error types of parameters", () => {
 describe("validate empty parameters", () => {
   // Test empty value
   test("should return true if value is empty", () => {
-    expect(validateStringWithList("")).toEqual({ is_valid: true });
-    expect(validateStringWithList("", { list: { values: ["123"] } })).toEqual({ is_valid: true });
+    expect(validateStringByList("")).toEqual({ is_valid: true });
+    expect(validateStringByList("", { list: { values: ["123"] } })).toEqual({ is_valid: true });
   });
   // Test empty options
   test("should return true if options are empty", () => {
-    expect(validateStringWithList("123", {})).toEqual({ is_valid: true });
+    expect(validateStringByList("123", {})).toEqual({ is_valid: true });
   });
 
   // Test empty list
   test("should return true if list is empty", () => {
-    expect(validateStringWithList("123", { list: {} })).toEqual({ is_valid: true });
-    expect(validateStringWithList("123", { list: null as any })).toEqual({ is_valid: true });
+    expect(validateStringByList("123", { list: {} })).toEqual({ is_valid: true });
+    expect(validateStringByList("123", { list: null as any })).toEqual({ is_valid: true });
   });
   // Test empty list properties
   test("should return true if list properties are empty", () => {
     expect(
-      validateStringWithList("123", {
+      validateStringByList("123", {
         list: {
           values: [],
           starts_with: [],
@@ -75,7 +75,7 @@ describe("validate String With Whitelist", () => {
   // AND - all condition is met
   test("AND - all condition is met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -91,7 +91,7 @@ describe("validate String With Whitelist", () => {
   // AND - one of the condition is not met
   test("AND - one of the condition is not met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -107,7 +107,7 @@ describe("validate String With Whitelist", () => {
       error_message: 'Value should be "example1234" or "test"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -123,7 +123,7 @@ describe("validate String With Whitelist", () => {
       error_message: 'Value should start with "exe"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -139,7 +139,7 @@ describe("validate String With Whitelist", () => {
       error_message: 'Value should end with "1234"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -159,7 +159,7 @@ describe("validate String With Whitelist", () => {
   // AND - multiple conditions are not met
   test("AND - multiple conditions are not met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -175,7 +175,7 @@ describe("validate String With Whitelist", () => {
   // AND - change validation sequence
   test("AND - change validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -186,9 +186,13 @@ describe("validate String With Whitelist", () => {
           validation_sequence: ["starts_with", "ends_with", "contains", "values"]
         }
       })
-    ).toEqual({ is_valid: false, actual_sequence: ["starts_with"], error_message: 'Value should start with "exe"' });
+    ).toEqual({
+      is_valid: false,
+      actual_sequence: ["starts_with"],
+      error_message: 'Value should start with "exe"'
+    });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -201,7 +205,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: false, actual_sequence: ["ends_with"], error_message: 'Value should end with "1234"' });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -218,7 +222,7 @@ describe("validate String With Whitelist", () => {
   // AND - duplicate validation sequence
   test("AND - duplicate validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "AND",
@@ -238,8 +242,10 @@ describe("validate String With Whitelist", () => {
 
   //AND -custom validation
   test("AND -custom validation", () => {
+    const test1 = (value: any) => value === "example123";
+    const test2 = (value: any) => value.length > 5;
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "whitelist",
         list: {
@@ -248,26 +254,19 @@ describe("validate String With Whitelist", () => {
           starts_with: ["ex"],
           ends_with: ["123"],
           contains: ["ample"],
-          validation_sequence: [
-            "starts_with",
-            "ends_with",
-            (value) => value === "example123",
-            "contains",
-            "values",
-            (value) => value.length > 5
-          ]
+          validation_sequence: ["starts_with", "ends_with", test1, "contains", "values", test2]
         }
       })
     ).toEqual({
       is_valid: true,
-      actual_sequence: ["starts_with", "ends_with", "self_check_0", "contains", "values", "self_check_1"]
+      actual_sequence: ["starts_with", "ends_with", test1, "contains", "values", test2]
     });
   });
 
   // OR - one condition is met
   test("OR - one condition is met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -279,7 +278,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["values"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -291,7 +290,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["values", "starts_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -303,7 +302,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["values", "starts_with", "ends_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -319,7 +318,7 @@ describe("validate String With Whitelist", () => {
   // OR - multiple conditions are met
   test("OR - multiple conditions are met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -335,7 +334,7 @@ describe("validate String With Whitelist", () => {
   // OR change validation sequence
   test("OR - change validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -348,7 +347,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["starts_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -361,7 +360,7 @@ describe("validate String With Whitelist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["ends_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -378,7 +377,7 @@ describe("validate String With Whitelist", () => {
   // OR - duplicate validation sequence
   test("OR - duplicate validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list: {
           combination: "OR",
@@ -397,7 +396,7 @@ describe("validate String With Blacklist", () => {
   // AND - all condition is met
   test("AND - all condition is met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -419,7 +418,7 @@ describe("validate String With Blacklist", () => {
   // AND - one of the condition is not met
   test("AND - one of the condition is not met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -432,7 +431,7 @@ describe("validate String With Blacklist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["values"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -448,7 +447,7 @@ describe("validate String With Blacklist", () => {
       actual_sequence: ["values", "starts_with"]
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -464,7 +463,7 @@ describe("validate String With Blacklist", () => {
       actual_sequence: ["values", "starts_with", "ends_with"]
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -484,7 +483,7 @@ describe("validate String With Blacklist", () => {
   // AND - multiple conditions are not met
   test("AND - multiple conditions are not met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -501,7 +500,7 @@ describe("validate String With Blacklist", () => {
   // AND - change validation sequence
   test("AND - change validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -515,7 +514,7 @@ describe("validate String With Blacklist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["starts_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -529,7 +528,7 @@ describe("validate String With Blacklist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["ends_with"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -543,7 +542,7 @@ describe("validate String With Blacklist", () => {
       })
     ).toEqual({ is_valid: true, actual_sequence: ["contains"] });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -565,8 +564,10 @@ describe("validate String With Blacklist", () => {
 
   //AND -custom validation
   test("AND -custom validation", () => {
+    const test1 = (value: any) => value === "example123";
+    const test2 = (value: any) => value.length > 5;
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -575,28 +576,20 @@ describe("validate String With Blacklist", () => {
           starts_with: ["ex"],
           ends_with: ["123"],
           contains: ["ample"],
-          validation_sequence: [
-            "starts_with",
-            "ends_with",
-            (value) => value === "example123",
-            "contains",
-            "values",
-            (value) => value.length > 5
-          ]
+          validation_sequence: ["starts_with", "ends_with", test1, "contains", "values", test2]
         }
       })
     ).toEqual({
       is_valid: false,
-      actual_sequence: ["starts_with", "ends_with", "self_check_0", "contains", "values", "self_check_1"],
-      error_message:
-        'Value should not start with "ex" and should not end with "123" and should not pass self check 0 and should not contain "ample" and should not be "example123" and should not pass self check 1'
+      actual_sequence: ["starts_with", "ends_with", test1, "contains", "values", test2],
+      error_message: `Value should not start with "ex" and should not end with "123" and should not pass self check ${test1} and should not contain "ample" and should not be "example123" and should not pass self check ${test2}`
     });
   });
 
   // AND - duplicate validation sequence
   test("AND - duplicate validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -617,7 +610,7 @@ describe("validate String With Blacklist", () => {
   // OR - one condition is met
   test("OR - one condition is met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -634,7 +627,7 @@ describe("validate String With Blacklist", () => {
       error_message: 'Value should not be "example123" or "test"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -651,7 +644,7 @@ describe("validate String With Blacklist", () => {
       error_message: 'Value should not start with "exa"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -668,7 +661,7 @@ describe("validate String With Blacklist", () => {
       error_message: 'Value should not end with "123"'
     });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -689,7 +682,7 @@ describe("validate String With Blacklist", () => {
   // OR - multiple conditions are met
   test("OR - multiple conditions are met", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -710,7 +703,7 @@ describe("validate String With Blacklist", () => {
   // OR change validation sequence
   test("OR - change validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -722,9 +715,13 @@ describe("validate String With Blacklist", () => {
           validation_sequence: ["starts_with", "ends_with", "contains", "values"]
         }
       })
-    ).toEqual({ is_valid: false, actual_sequence: ["starts_with"], error_message: 'Value should not start with "ex"' });
+    ).toEqual({
+      is_valid: false,
+      actual_sequence: ["starts_with"],
+      error_message: 'Value should not start with "ex"'
+    });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -736,9 +733,13 @@ describe("validate String With Blacklist", () => {
           validation_sequence: ["ends_with", "contains", "values", "starts_with"]
         }
       })
-    ).toEqual({ is_valid: false, actual_sequence: ["ends_with"], error_message: 'Value should not end with "123"' });
+    ).toEqual({
+      is_valid: false,
+      actual_sequence: ["ends_with"],
+      error_message: 'Value should not end with "123"'
+    });
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
@@ -750,13 +751,17 @@ describe("validate String With Blacklist", () => {
           validation_sequence: ["contains", "values", "starts_with", "ends_with"]
         }
       })
-    ).toEqual({ is_valid: false, actual_sequence: ["contains"], error_message: 'Value should not contain "ample"' });
+    ).toEqual({
+      is_valid: false,
+      actual_sequence: ["contains"],
+      error_message: 'Value should not contain "ample"'
+    });
   });
 
   // OR - duplicate validation sequence
   test("OR - duplicate validation sequence", () => {
     expect(
-      validateStringWithList("example123", {
+      validateStringByList("example123", {
         error_label: "Value",
         list_type: "blacklist",
         list: {
