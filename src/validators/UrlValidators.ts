@@ -1,5 +1,5 @@
 import { isNil, isEmpty, isString, isPlainObject } from "lodash-es";
-import URLParser from "url-parse";
+import { URL } from "whatwg-url";
 import { validateString, isValidString } from "@/validators/StringValidators.js";
 import { validatePort, isValidPort } from "@/validators/PortValidators.js";
 import { validateQuery, isValidQuery } from "@/validators/QueryValidators.js";
@@ -34,6 +34,14 @@ const componentToIsValidMap = {
   hash: isValidString
 };
 
+const componentToGetterNameMap = {
+  protocol: "protocol",
+  host: "hostname",
+  port: "port",
+  query: "search",
+  hash: "hash"
+} as const;
+
 export function validateUrl(url: string, options: URLValidationOptions) {
   if (!isString(url)) {
     throw new Error("URL must be a string");
@@ -43,7 +51,12 @@ export function validateUrl(url: string, options: URLValidationOptions) {
   }
   if (isEmpty(options)) return new ValidationResult(true);
 
-  const parsedUrl = URLParser(url);
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch (error) {
+    throw new Error("Please provide a valid URL");
+  }
   const validationSequence = options.validation_sequence ?? ["protocol", "host", "port", "query", "hash"];
   const seenChecks = new Set<UrlComponent>();
 
@@ -54,10 +67,7 @@ export function validateUrl(url: string, options: URLValidationOptions) {
 
     const validator = componentToValidatorMap[check];
     if (!isNil(validator)) {
-      const result = validator(
-        check === "host" ? parsedUrl.hostname : parsedUrl[check],
-        options[`${check}_config`] as any
-      );
+      const result = validator(parsedUrl[componentToGetterNameMap[check]], options[`${check}_config`] as any);
       if (!result.is_valid) {
         return result;
       }
@@ -76,7 +86,12 @@ export function isValidUrl(url: string, options: URLValidationOptions) {
   }
   if (isEmpty(options)) return true;
 
-  const parsedUrl = URLParser(url);
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch (error) {
+    throw new Error("Please provide a valid URL");
+  }
   const validationSequence = options.validation_sequence ?? ["protocol", "host", "port", "query", "hash"];
   const seenChecks = new Set<UrlComponent>();
 
@@ -87,10 +102,7 @@ export function isValidUrl(url: string, options: URLValidationOptions) {
 
     const validator = componentToIsValidMap[check];
     if (!isNil(validator)) {
-      const result = validator(
-        check === "host" ? parsedUrl.hostname : parsedUrl[check],
-        options[`${check}_config`] as any
-      );
+      const result = validator(parsedUrl[componentToGetterNameMap[check]], options[`${check}_config`] as any);
       if (!result) return false;
     }
   }

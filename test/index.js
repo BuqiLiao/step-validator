@@ -1,4 +1,4 @@
-import URL from "url-parse";
+// import URL from "url-parse";
 // import { isIP, inRange } from "range_check";
 // // import { isValidString } from "../dist/index.js";
 // import URLParser from "url-parse";
@@ -42,63 +42,79 @@ import { isValidUrl, validateUrl, isValidString, isValidPort } from "../dist/ind
 // );
 const isIPv4 = (value) => validator.isIP(value, 4);
 
+// const config = {
+//   protocol_config: {
+//     required: true,
+//     whitelist: {
+//       values: ["udp:"]
+//     },
+//     error_label: "Protocol"
+//   },
+//   host_config: {
+//     required: true,
+//     whitelist: {
+//       validation_sequence: [isIPv4]
+//     },
+//     error_label: "Host",
+//     error_messages: {
+//       whitelist: (type) => {
+//         if (type === isIPv4) {
+//           return "Host should be an IPv4 address";
+//         }
+//       }
+//     }
+//   },
+//   port_config: {
+//     required: true,
+//     error_label: "Port"
+//   },
+//   query_config: {
+//     keys_config: {
+//       whitelist: ["localaddr", "prg"],
+//       allow_duplicates: false
+//     },
+//     values_config: {
+//       localaddr: {
+//         required: true,
+//         whitelist: {
+//           validation_sequence: [isIPv4]
+//         },
+//         error_label: "localaddr's value",
+//         error_messages: {
+//           whitelist: (type) => {
+//             if (type === isIPv4) {
+//               return "localaddr's value should be an IPv4 address";
+//             }
+//           }
+//         }
+//       },
+//       prg: {
+//         type: "port",
+//         error_label: "prg's value"
+//       }
+//     }
+//   }
+// };
 const config = {
   protocol_config: {
     required: true,
     whitelist: {
-      values: ["udp:"]
+      values: ['rtsp:', 'rtsps:']
     },
     error_label: "Protocol"
   },
   host_config: {
     required: true,
     whitelist: {
-      validation_sequence: [isIPv4]
+      end_with: [".mpd"]
     },
-    error_label: "Host",
-    error_messages: {
-      whitelist: (type) => {
-        if (type === isIPv4) {
-          return "Host should be an IPv4 address";
-        }
-      }
-    }
-  },
-  port_config: {
-    required: true,
-    error_label: "Port"
-  },
-  query_config: {
-    keys_config: {
-      whitelist: ["localaddr", "prg"],
-      allow_duplicates: false
-    },
-    values_config: {
-      localaddr: {
-        required: true,
-        whitelist: {
-          validation_sequence: [isIPv4]
-        },
-        error_label: "localaddr's value",
-        error_messages: {
-          whitelist: (type) => {
-            if (type === isIPv4) {
-              return "localaddr's value should be an IPv4 address";
-            }
-          }
-        }
-      },
-      prg: {
-        type: "port",
-        error_label: "prg's value"
-      }
-    }
+    error_label: "Host"
   }
 };
-const url = "udp://1.0.0.0:011111?localaddr=1.0.0.0&prg=123&prg=123";
+const url = "rtsp";
 
 console.log(validateUrl(url, config));
-console.log(isValidUrl(url, config));
+// console.log(isValidUrl(url, config));
 
 // console.log(isValidNumber(123, {
 //   whitelist: {

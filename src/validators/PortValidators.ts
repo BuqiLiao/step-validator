@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isString, isPlainObject, isNumber } from "lodash-es";
+import { isNil, isEmpty, isString, isPlainObject, isNumber, isNaN } from "lodash-es";
 import { validateNumber, isValidNumber } from "@/validators/NumberValidators.js";
 import type { NumberValidationOptions, NumberErrorMessages } from "@/validators/NumberValidators.js";
 import { ValidationResult } from "@/utils/ValidationResult.js";
@@ -40,6 +40,9 @@ export function validatePort(value: string | number, options?: PortValidationOpt
     if (value === "") return new ValidationResult(true);
     value = Number(value);
   }
+  if (isNaN(value)) {
+    return new ValidationResult(false, `${options?.error_label ?? "Port"} must be a number`);
+  }
   if (value < 1 || value > 65535) {
     return new ValidationResult(false, `${options?.error_label ?? "Port"} must be between 1 and 65535`);
   }
@@ -62,6 +65,7 @@ export function isValidPort(value: string | number, options?: PortValidationOpti
     if (value === "") return true;
     value = Number(value);
   }
+  if (isNaN(value)) return false;
   if (value < 1 || value > 65535) return false;
 
   return isValidNumber(value, options);
