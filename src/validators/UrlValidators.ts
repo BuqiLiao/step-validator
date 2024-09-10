@@ -8,12 +8,13 @@ import type { QueryValidationOptions } from "@/validators/QueryValidators.js";
 import type { StringValidationOptions } from "@/validators/StringValidators.js";
 import type { PortValidationOptions } from "@/validators/PortValidators.js";
 
-export type UrlComponent = "protocol" | "host" | "port" | "query" | "hash";
+export type UrlComponent = "protocol" | "hostname" | "port" | "path" | "query" | "hash";
 
 export interface URLValidationOptions {
   protocol_config?: StringValidationOptions;
-  host_config?: StringValidationOptions;
+  hostname_config?: StringValidationOptions;
   port_config?: PortValidationOptions;
+  path_config?: StringValidationOptions;
   query_config?: QueryValidationOptions;
   hash_config?: StringValidationOptions;
   validation_sequence?: UrlComponent[];
@@ -21,23 +22,26 @@ export interface URLValidationOptions {
 
 const componentToValidatorMap = {
   protocol: validateString,
-  host: validateString,
+  hostname: validateString,
   port: validatePort,
+  path: (value: string, options: StringValidationOptions) => validateString(value.replace(/^\//, ""), options),
   query: validateQuery,
-  hash: validateString
+  hash: (value: string, options: StringValidationOptions) => validateString(value.replace(/^#/, ""), options)
 };
 const componentToIsValidMap = {
   protocol: isValidString,
-  host: isValidString,
+  hostname: isValidString,
   port: isValidPort,
+  path: (value: string, options: StringValidationOptions) => isValidString(value.replace(/^\//, ""), options),
   query: isValidQuery,
-  hash: isValidString
+  hash: (value: string, options: StringValidationOptions) => isValidString(value.replace(/^#/, ""), options)
 };
 
 const componentToGetterNameMap = {
   protocol: "protocol",
-  host: "hostname",
+  hostname: "hostname",
   port: "port",
+  path: "pathname",
   query: "search",
   hash: "hash"
 } as const;
@@ -57,7 +61,7 @@ export function validateUrl(url: string, options: URLValidationOptions) {
   } catch (error) {
     throw new Error("Please provide a valid URL");
   }
-  const validationSequence = options.validation_sequence ?? ["protocol", "host", "port", "query", "hash"];
+  const validationSequence = options.validation_sequence ?? ["protocol", "hostname", "port", "path", "query", "hash"];
   const seenChecks = new Set<UrlComponent>();
 
   for (const check of validationSequence) {
@@ -68,9 +72,7 @@ export function validateUrl(url: string, options: URLValidationOptions) {
     const validator = componentToValidatorMap[check];
     if (!isNil(validator)) {
       const result = validator(parsedUrl[componentToGetterNameMap[check]], options[`${check}_config`] as any);
-      if (!result.is_valid) {
-        return result;
-      }
+      if (!result.is_valid) return result;
     }
   }
 
@@ -92,7 +94,7 @@ export function isValidUrl(url: string, options: URLValidationOptions) {
   } catch (error) {
     throw new Error("Please provide a valid URL");
   }
-  const validationSequence = options.validation_sequence ?? ["protocol", "host", "port", "query", "hash"];
+  const validationSequence = options.validation_sequence ?? ["protocol", "hostname", "port", "path", "query", "hash"];
   const seenChecks = new Set<UrlComponent>();
 
   for (const check of validationSequence) {
